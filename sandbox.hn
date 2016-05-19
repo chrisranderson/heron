@@ -1,0 +1,55 @@
+(begin
+    (assume (~ x (normal mu 1)))
+    (observe x [0 .5 .3 .2 .1])
+    (predict mu))
+
+# model
+std_dev = 4
+x ~ (normal mu? std_dev)
+
+
+# observations
+predict mu given
+
+# query
+
+
+// What does each graphical model have?
+unknowns - these we sample
+relationships between variables and distributions
+declaration of what variables we'd like to sample (though this can be inferred)
+
+
+===================== fitting normal data
+data ~ normal(mu, 1)
+data.observations = [1 2 3 4 5] ////// observed data = [1 2 3 4 5]
+plot(p(mu | data))
+
+OR
+
+x ~ normal(mu, 1)
+data = [1 2 3 4 5]
+plot(p(mu | x:data))
+
+OR
+
+data ~ normal(mu, 1)
+observed data = [1 2 3 4 5]
+plot(p(mu | data))
+
+
+// prints a histogram of mus
+===================== configuration
+
+// declaring sampler at the beginning
+
+
+(let [add-3 (+ 3)]
+    (add-3 5)
+    )
+
+(map add-3 [1 2 3 4 5]) //-> [4 5 6 7 8]
+(filter is-even? [1 2 3 4 5]) [2 4])
+(reduce + 0 [1 2 3 4 5]) //-> 15
+
+
