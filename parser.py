@@ -2,11 +2,7 @@ from pyparsing import *
 from util import *
 from pprint import pprint
 
-# unicode:
 DefinedLater = Forward
-
-def take_first(x):
-    return x
 
 def wrap_with_name(name, apply_before=lambda x: x):
 
@@ -59,9 +55,9 @@ def parse(input_string):
                                  .setParseAction(wrap_with_name('function_application'))
 
     # model definition
-    OBSERVATION = Group(identifier + colon + EXPRESSION)
+    OBSERVATION = Group(identifier + colon + EXPRESSION).setParseAction(wrap_with_name('observation'))
     OBSERVATION_LIST = Group(delimitedList(OBSERVATION)).setParseAction(wrap_with_name('observation_list'))
-    PROBABILITY_EXPRESSION << Group('p' + l_paren + Group(delimitedList(identifier)) +
+    PROBABILITY_EXPRESSION << Group('p' + l_paren + Group(delimitedList(identifier)).setParseAction(wrap_with_name('latent_variables')) +
                                     Optional(pipe + OBSERVATION_LIST) + r_paren)\
                                     .setParseAction(wrap_with_name('probability_expression'))
     MODEL_DEFINITION = Group(random_variable + tilda + EXPRESSION)\
@@ -76,11 +72,7 @@ if __name__ == "__main__":
     add = '(+ 3 9.01)'
     model = '''
         x ~ normal(mu, 1)
-
-
         y ~ normal(mu2, 1)
-
-
         data = [1, 2, 3, 4, 5]
         plot(p(mu|x:data))
     '''

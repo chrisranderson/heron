@@ -9,5 +9,10 @@ def plot(x):
         })
     ])
 
+def python(x):
+    return eval(x)
+
 def initialize_environment(environment):
     environment.add_function(plot)
+    environment.add_function(python)
+    return environment
