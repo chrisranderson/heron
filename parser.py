@@ -20,7 +20,7 @@ def parse(input_string):
     PROBABILITY_EXPRESSION = DefinedLater()
 
     id_regex = Regex('[-a-zA-Z!?_/*+][a-z0-9A-Z!?_/*-]*')
-    number_regex = Regex('(([0-9]+)|([0-9]*\.[0-9]+))')
+    number_regex = Regex('-?(([0-9]+)|([0-9]*\.[0-9]+))')
 
     #################### terminals
     l_paren = Literal('(').suppress()
@@ -74,7 +74,9 @@ if __name__ == "__main__":
         x ~ normal(mu, 1)
         y ~ normal(mu2, 1)
         data = [1, 2, 3, 4, 5]
-        plot(p(mu|x:data))
+        plot(
+        p(mu|x:data)
+        )
     '''
 
     parsed = parse(model)

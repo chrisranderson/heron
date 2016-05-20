@@ -8,6 +8,7 @@
 - Ease of use over ease of language implementation.
     - (what about tooling?)
     - (don't let your language design be dictated by what the parser generator can handle)
+- For every bit of criticism the interpreter offers, it should offer something helpful instead.
 
 ## Questions
 - How closely should the language follow mathematical notation? Infix?

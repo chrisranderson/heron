@@ -4,6 +4,7 @@ from environment import *
 from heron_builtins import *
 from util import *
 from exceptions import *
+from sampler import *
 
 ################### Convenience functions
 def first(array):
@@ -19,7 +20,8 @@ def evaluate_list(a_list, environment):
 def evaluate_definition(line, environment):
     ((_, variable_name), (_, (((_, function_name), (_, argument_list))))) = line # wowza
     argument_list = list(map(lambda argument: evaluate_expression(argument, environment, True), argument_list))
-    environment.add_model_definition(variable_name, function_name, argument_list)
+    function = environment.get_function(function_name)
+    environment.add_model_definition(variable_name, function, argument_list)
 
 def evaluate_assignment(line, environment):
     ((_, variable_name), assignment_value) = line
@@ -39,21 +41,24 @@ def evaluate_probability_expression(line, environment):
     for latent_variable in latent_variables:
         environment.add_latent_variable(latent_variable)
 
-    for observation in observation_list:
-        evaluate_observation(*(map(second, observation)))
+    for observation_pair in observation_list: # todo: causes duplication of memory with lists. Environment has multiple copies.
+        ((_, variable_name), observation) = observation_pair
+        evaluate_observation(variable_name, observation, environment)
 
-def evaluate_observation(variable_name, observations):
-    pass
+    return generate_samples(environment)
+
+def evaluate_observation(variable_name, observation, environment):
+    environment.add_model_observation(variable_name, evaluate_expression(observation, environment))
 
 def evaluate_expression(expression, environment, allow_unevaluated=False):
     expression_type, expression_value = expression
     if expression_type == 'variable':
-        if allow_unevaluated:
-            return expression_value
-        else:
-            try:
-                return environment.get_variable_value(expression_value)
-            except KeyError as e:
+        try: # if the variable is defined, return its value
+            return environment.get_variable_value(expression_value)
+        except KeyError as e:
+            if allow_unevaluated:
+                return expression_value
+            else:
                 raise UndefinedVariableException(expression_value)
 
     elif expression_type == 'number':
@@ -64,7 +69,6 @@ def evaluate_expression(expression, environment, allow_unevaluated=False):
 
     elif expression_type == 'probability_expression':
         return evaluate_probability_expression(expression_value, environment)
-
 
 def evaluate(ast):
     if isinstance(ast, str):
@@ -84,10 +88,10 @@ def evaluate(ast):
 if __name__ == "__main__":
     add = '(+ 3 9.01)'
     model = '''
+        mu ~ uniform_continuous(-10, 10)
         x ~ normal(mu, 1)
-        y ~ normal(mu2, 1)
         data = [1, 2, 3, 4, 5]
-        plot(p(mu, mu2|x:data, y:data))
+        plot(p(mu|x:data))
     '''
 
     print(evaluate(model))
