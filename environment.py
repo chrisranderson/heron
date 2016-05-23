@@ -10,6 +10,9 @@ class Environment:
         self.functions = {}
         self.latent_variables = []
 
+        self.parent_to_children_dependencies = {}
+        self.child_to_parent_dependencies = {}
+
     # setters
     def add_model_observation(self, variable_name, observations):
         self.model_observations[variable_name] = observations
@@ -26,7 +29,7 @@ class Environment:
     def add_latent_variable(self, variable_name):
         self.latent_variables.append(variable_name)
 
-    # getters
+    # getters ##########################################################################################################
     def get_function(self, function_name):
         try:
             return self.functions[function_name]
@@ -38,9 +41,25 @@ class Environment:
 
     def get_model_definition(self, variable_name):
         try:
-            return self.model_definitions[variable_name]
+            function, arguments = self.model_definitions[variable_name]
+            return function, list(arguments)
         except:
             raise(ImproperPriorException(variable_name))
+
+    # business #########################################################################################################
+
+    def add_dependency_graph(self):
+        for variable_name, (function, arguments) in self.model_definitions.items():
+            dependencies = [x for x in arguments if isinstance(x, str)]
+            self.parent_to_children_dependencies[variable_name] = dependencies
+
+            for dependent in dependencies:
+                if dependent in self.child_to_parent_dependencies:
+                    parents = self.child_to_parent_dependencies[dependent]
+                    parents.append(variable_name)
+                else:
+                    self.child_to_parent_dependencies[dependent] = [variable_name]
+
 
 
 

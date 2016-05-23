@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 import scipy.stats
 
@@ -11,11 +12,12 @@ def plot(x):
         })
     ])
 
-
-
 # distributions
-def uniform_continuous(start, end):
-    return np.random.uniform(start, end)
+def uniform_continuous(start, end, x=None):
+    if x is None:
+        return np.random.uniform(start, end)
+    else:
+        return 1 / (end - start) if (x <= end and x >= start) else 0
 
 def normal(mean, variance, x=None):
     if x is None:

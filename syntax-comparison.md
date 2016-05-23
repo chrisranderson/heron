@@ -30,10 +30,54 @@ b should be -1
     
     (plot/histogram (map :m samples))
     (plot/histogram (map :b samples))
+
+## Church from [here](http://forestdb.org/models/linear-regression.html)
+    (define xs '(0 1 2 3))
+    (define ys '(0 1 4 6))
     
+    (define samples
+      (mh-query
+    
+       1000 10
+    
+       (define m (gaussian 0 2))
+       (define b (gaussian 0 2))
+       (define sigma-squared (gamma 1 1))
+    
+       (define (f x)
+         (+ (* m x) b))
+    
+       m
+    
+       (all
+        (map (lambda (x y) (equal? (gaussian (f x) sigma-squared y) y))
+             xs
+             ys))))
+    
+    (hist samples "Predicted y for x=4" #t)
+
 ## Figaro
+Gave up installing.
+
 ## Probabilistic-C
-## PyMC3
+Source isn't released yet.
+
+## PyMC3 from [here](https://github.com/pymc-devs/pymc3/blob/3cf54ce12f7efc35af084f2fddff650159c9e2c2/pymc3/examples/GLM-linear.ipynb).
+    with Model() as model: # model specifications in PyMC3 are wrapped in a with-statement
+        # Define priors
+        sigma = HalfCauchy('sigma', beta=10, testval=1.)
+        intercept = Normal('Intercept', 0, sd=20)
+        x_coeff = Normal('x', 0, sd=20)
+
+        # Define likelihood
+        likelihood = Normal('y', mu=intercept + x_coeff * x,
+                            sd=sigma, observed=y)
+    
+        # Inference!
+        start = find_MAP() # Find starting value by optimization
+        step = NUTS(scaling=start) # Instantiate MCMC sampling algorithm
+        trace = sample(2000, step, start=start, progressbar=False)
+
 ## Quicksand
     qs = terralib.require("qs")
     -- Model definitionlin
@@ -59,10 +103,62 @@ b should be -1
     print(queryfn())
     -- output: 8.024
 
-## Stan
-## Venture
-## WebPPL
+## Stan from the Stan Reference
+    data {
+        int<lower=0> N;
+        vector[N] x;
+        vector[N] y;
+    }
+    parameters {
+        real alpha;
+        real beta;
+        real<lower=0> sigma;
+    }
+    model {
+        y ~ normal(alpha + beta * x, sigma);    
+    }
 
+## Venture [from here](http://probcomp.csail.mit.edu/venture/release-0.5/tutorial/linear-regression/index.html): 
+    assume intercept = normal(0,10);
+    assume slope = normal(0,10)
+    assume line = proc(x) { slope * x + intercept }
+    assume obs = proc(x) { normal(line(x), 1) }
+    
+    // A tiny data set
+    observe obs(1) = 2;
+    observe obs(2) = 2;
+    
+    // Should be solvable exactly
+    infer conditional;
+    
+    // Do we get plausible values?
+    sample list(intercept, slope, line(3))
+
+## WebPPL [from here](https://github.com/probmods/webppl/blob/master/examples/linearRegression.wppl)
+    var xs = [0, 1, 2, 3]
+    var ys = [0, 1, 4, 6]
+    
+    var model = function() {
+      var m = gaussian(0, 2)
+      var b = gaussian(0, 2)
+      var sigmaSquared = gamma(1, 1)
+    
+      var f = function(x) {
+        return m * x + b
+      }
+    
+      map2(
+          function(x, y) {
+            factor(gaussianERP.score([(f(x)), sigmaSquared], y))
+          },
+          xs,
+          ys)
+    
+      return f(4)
+    }
+    
+    MH(model, 10000)
+    
 ## Heron
 
 

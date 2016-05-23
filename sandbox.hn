@@ -42,14 +42,3 @@ plot(p(mu | data))
 ===================== configuration
 
 // declaring sampler at the beginning
-
-
-(let [add-3 (+ 3)]
-    (add-3 5)
-    )
-
-(map add-3 [1 2 3 4 5]) //-> [4 5 6 7 8]
-(filter is-even? [1 2 3 4 5]) [2 4])
-(reduce + 0 [1 2 3 4 5]) //-> 15
-
-
