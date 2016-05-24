@@ -1,13 +1,17 @@
 from __future__ import division
 import numpy as np
 import scipy.stats
+from math import *
 
-def plot(x):
-    import plotly
-    from plotly.graph_objs import Scatter
+def plot(x, title=''):
 
-    plotly.offline.plot([
-        Scatter({
+    print('Importing plot library...')
+    import plotly.offline as plotter
+    from plotly.graph_objs import Histogram, Scatter
+
+    print('Generating plot...')
+    plotter.plot([
+        Histogram({
             'x': x
         })
     ])
@@ -17,14 +21,18 @@ def uniform_continuous(start, end, x=None):
     if x is None:
         return np.random.uniform(start, end)
     else:
-        return 1 / (end - start) if (x <= end and x >= start) else 0
+        if x < start or x > end:
+            return 0.000000000000000001 # todo
+        else:
+            return 1 / (end - start)
 
+sqrt2pi = sqrt(2*pi)
 def normal(mean, variance, x=None):
     if x is None:
         return np.random.normal(mean, variance)
     else:
-        return scipy.stats.norm(mean, variance).pdf(x)
-
+        # return scipy.stats.norm(mean, variance).pdf(x)
+        return (1/(sqrt(variance) * sqrt2pi))*exp(-((x-mean)**2)/(2*variance))
 def python(x):
     return eval(x)
 

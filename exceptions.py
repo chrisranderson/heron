@@ -7,6 +7,6 @@ class UndefinedFunctionException(Exception):
     def __init__(self, function_name):
         print('The function "{}" is undefined.'.format(function_name))
 
-class ImproperPriorException(Exception):
+class MissingPriorException(Exception):
     def __init__(self, variable_name):
         print('The latent variable {} does not have a defined prior.'.format(variable_name))

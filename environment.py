@@ -44,7 +44,11 @@ class Environment:
             function, arguments = self.model_definitions[variable_name]
             return function, list(arguments)
         except:
-            raise(ImproperPriorException(variable_name))
+            raise(MissingPriorException(variable_name))
+
+    def get_model_observation(self, variable_name):
+        return self.model_observations[variable_name]
+
 
     # business #########################################################################################################
 

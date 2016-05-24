@@ -1,3 +1,3 @@
 config = {
-    'sample_count': 1000
+    'sample_count': 10000
 }

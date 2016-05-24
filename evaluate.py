@@ -90,8 +90,8 @@ if __name__ == "__main__":
     model = '''
         mu ~ uniform_continuous(-10, 10)
         x ~ normal(mu, 1)
-        data = [1, 2, 3, 4, 5]
-        plot(p(mu|x:data))
+        data = [1, 2, 2, 3, 3, 3, 4, 4, 5]
+        plot(p(mu | x:data))
     '''
 
     print(evaluate(model))
