@@ -89,8 +89,8 @@ if __name__ == "__main__":
     add = '(+ 3 9.01)'
     model = '''
         mu ~ uniform_continuous(-10, 10)
-        x ~ normal(mu, 1)
-        data = [1, 2, 2, 3, 3, 3, 4, 4, 5]
+        x ~ normal(mu 1)
+        data = [(3 + 4), function(3), 2, 3, 3, 3, 4, 4, 5]
         plot(p(mu | x:data))
     '''
 

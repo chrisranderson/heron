@@ -35,6 +35,8 @@ def parse(input_string):
 
     newline = Literal('\n').suppress()
     line = OneOrMore('\n').suppress()
+    space = Literal(' ').suppress()
+    comma = Literal(',').suppress()
 
     comment = Group('#' + SkipTo(newline)).suppress()
 
@@ -45,12 +47,16 @@ def parse(input_string):
     variable = id_regex.setParseAction(wrap_with_name('variable'))
 
     #################### non-terminals
-    LIST_LITERAL = Group(l_bracket + delimitedList(number) + r_bracket).setParseAction(wrap_with_name('list_literal'))
+    SPACE_SEPARATED_LIST = DefinedLater()
+    SPACE_SEPARATED_LIST.setDefaultWhitespaceChars([])
+    SPACE_SEPARATED_LIST = OneOrMore((EXPRESSION + Optional(Or([newline, space, comma]))))
+
+    LIST_LITERAL = Group(l_bracket + SPACE_SEPARATED_LIST + r_bracket).setParseAction(wrap_with_name('list_literal'))
     EXPRESSION << Or([FUNCTION_APPLICATION, LIST_LITERAL, PROBABILITY_EXPRESSION, number, identifier])
     ASSIGNMENT = Group(variable + equals + EXPRESSION).setParseAction(wrap_with_name('assignment'))
 
     # functions
-    ARGUMENT_LIST = Group(delimitedList(EXPRESSION, ',')).setParseAction(wrap_with_name('argument_list'))
+    ARGUMENT_LIST = Group(SPACE_SEPARATED_LIST).setParseAction(wrap_with_name('argument_list'))
     FUNCTION_APPLICATION << Group(function_name + l_paren + ARGUMENT_LIST + r_paren)\
                                  .setParseAction(wrap_with_name('function_application'))
 
@@ -71,9 +77,9 @@ def parse(input_string):
 if __name__ == "__main__":
     add = '(+ 3 9.01)'
     model = '''
-        x ~ normal(mu, 1)
-        y ~ normal(mu2, 1)
-        data = [1, 2, 3, 4, 5]
+        x ~ normal(mu ,1)
+        y ~ normal(mu2 1)
+        data = [1 2 3 4 5]
         plot(
         p(mu|x:data)
         )
